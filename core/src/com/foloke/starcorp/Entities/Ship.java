@@ -1,18 +1,16 @@
 package com.foloke.starcorp.Entities;
 
-import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.foloke.starcorp.AI.ShipAgent;
+import com.foloke.starcorp.packer.PShip;
 
 public class Ship extends Entity {
 
-
     public ShipAgent shipAgent;
 
-
-    public Ship(Vector2[] vertices) {
-        super(vertices);
+    public Ship(PShip pShip) {
+        super(pShip);
         shipAgent = new ShipAgent(this);
     }
 

@@ -1,6 +1,5 @@
 package com.foloke.starcorp.Entities;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -8,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.foloke.starcorp.Inventory.Inventory;
 import com.foloke.starcorp.Inventory.Item;
+import com.foloke.starcorp.packer.PEntity;
 
 public class Entity {
     protected Body body;
@@ -23,13 +23,13 @@ public class Entity {
     Inventory inventory;
 
 
-    public Entity(Vector2[] vertices) {
+    public Entity(PEntity pEntity) {
         //createBody(vertices, world);
-        this.collisionVertices = vertices;
+        this.collisionVertices = pEntity.vertices;
 
         simTransform = new Transform();
 
-        sprite = new Sprite(new Texture("drawable/debug_actor.png"));
+        this.sprite = new Sprite(pEntity.atlasRegion);
         sprite.setSize(1, 1);
         sprite.setOrigin(sprite.getWidth() / 2f, sprite.getHeight() / 2f);
 

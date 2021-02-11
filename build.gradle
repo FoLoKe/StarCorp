@@ -29,6 +29,7 @@ allprojects {
         aiVersion = '1.8.2'
         visuiVersion = '1.4.8'
         lmlVersion = '1.9.1.9.6'
+        jacksonVersion = '2.3.0'
     }
 
     repositories {
@@ -115,6 +116,7 @@ project(":core") {
 
 
     dependencies {
+        implementation project(":packer")
         implementation "com.kotcrab.vis:vis-ui:$visuiVersion"
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
@@ -122,7 +124,20 @@ project(":core") {
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.badlogicgames.gdx:gdx-controllers:$gdxControllers"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        implementation "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+        implementation "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+        implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
 
+    }
+}
 
+project(":packer") {
+    apply plugin: "java-library"
+
+    dependencies {
+        implementation "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+        implementation "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+        implementation "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+        implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
     }
 }

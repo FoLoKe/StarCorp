@@ -2,8 +2,12 @@ package com.foloke.starcorp.Entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.foloke.starcorp.AI.ShipAgent;
+import com.foloke.starcorp.AI.SpaceLocation;
 import com.foloke.starcorp.Sector;
 import com.foloke.starcorp.StarCorpGame;
 import com.foloke.starcorp.UI.GUI;
@@ -11,6 +15,7 @@ import com.foloke.starcorp.WorldController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class PlayerController {
     private Entity player;
@@ -28,6 +33,17 @@ public class PlayerController {
     private void handleInput(float delta) {
         if(Gdx.input.isKeyJustPressed(Input.Keys.I)) {
             core.openInventory(player);
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.B)) {
+            if(player instanceof Ship) {
+                ShipAgent shipAgent = ((Ship)player).shipAgent;
+                Random random = new Random();
+                Arrive<Vector2> steeringBehavior = new Arrive<>(shipAgent);
+                steeringBehavior.setArrivalTolerance(1);
+                steeringBehavior.setDecelerationRadius(shipAgent.getMaxLinearSpeed() * shipAgent.forwardForce / shipAgent.breakingForce);
+                steeringBehavior.setTarget(new SpaceLocation(new Vector2(0, 1000), 0));
+                ((Ship) player).shipAgent.setSteeringBehavior(steeringBehavior);
+            }
         }
         if(Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
             core.zoom(-1);

@@ -60,7 +60,7 @@ public class StarCorpGame extends ApplicationAdapter {
 
 		//DEBUG
 		dDebugRenderer = new Box2DDebugRenderer();
-		Entity entity = EntitiesFactory.createEntity(1);
+		Entity entity = EntitiesFactory.getInstance().createEntity(1);
 		worldController.addEntity(entity);
 		MouseInputProcessor mouseInputProcessor = new MouseInputProcessor(this);
 		playerController = new PlayerController(this);

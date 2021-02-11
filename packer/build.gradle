@@ -1,0 +1,14 @@
+sourceCompatibility = 1.7
+sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.main.resources.srcDirs = ["../android/assets"]
+
+project.ext.mainClassName = "com.foloke.starcorp.packer.ObjectsPacker"
+project.ext.assetsDir = new File("../android/assets")
+
+task run(dependsOn: classes, type: JavaExec) {
+    main = project.mainClassName
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    workingDir = project.assetsDir
+    ignoreExitValue = true
+}

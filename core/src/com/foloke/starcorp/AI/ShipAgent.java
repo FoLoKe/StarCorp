@@ -16,13 +16,13 @@ public class ShipAgent implements Steerable<Vector2> {
     float boundingRadius = 1f;
     boolean tagged = false;
 
-    float maxLinearSpeed = 1f;
+    float maxLinearSpeed = 90f;
     float maxAngularSpeed = 1f;
     float maxLinearAcceleration = 1f;
     float maxAngularAcceleration = 1f;
 
-    float forwardForce = 10f;
-    float breakingForce = 5f;
+    public float forwardForce = 10f;
+    public float breakingForce = 5f;
     float rotationImpulse = 0.01f;
     float sidewaysForce = 5f;
     boolean dampingEnabled = true;
@@ -37,7 +37,6 @@ public class ShipAgent implements Steerable<Vector2> {
     public void update(float delta) {
         if(steeringBehavior != null) {
             steeringBehavior.calculateSteering(steeringOutput);
-
             if(steeringOutput.linear.y > 0) {
                steeringOutput.linear.y *= forwardForce;
             } else {
@@ -130,7 +129,7 @@ public class ShipAgent implements Steerable<Vector2> {
 
     @Override
     public float getMaxLinearSpeed() {
-        return maxAngularSpeed = 0f;
+        return maxLinearSpeed;
     }
 
     @Override
@@ -197,7 +196,7 @@ public class ShipAgent implements Steerable<Vector2> {
 
     @Override //TODO
     public Location<Vector2> newLocation() {
-        return null;
+        return new SpaceLocation();
     }
 
 }
