@@ -34,6 +34,11 @@ public class PlayerController {
         if(Gdx.input.isKeyJustPressed(Input.Keys.I)) {
             core.openInventory(player);
         }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.N)) {
+            core.getGui().openSettings();
+        }
+
         if(Gdx.input.isKeyJustPressed(Input.Keys.B)) {
             if(player instanceof Ship) {
                 ShipAgent shipAgent = ((Ship)player).shipAgent;

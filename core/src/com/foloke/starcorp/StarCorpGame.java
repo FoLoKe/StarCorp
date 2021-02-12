@@ -30,19 +30,12 @@ public class StarCorpGame extends ApplicationAdapter {
 	public ShapeRenderer debugRenderer;
 	private PlayerController playerController;
 
+	public static Configurator configurator;
+
 	@Override
 	public void create () {
 
-		//DISPLAY
-		//Gdx.graphics.setResizable(false);
-
-		//Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-		//Gdx.graphics.setVSync(true);
-
-		//DisplayMode[] modes = Gdx.graphics.getDisplayModes();
-		//for (DisplayMode mode : modes) {
-		//	System.out.println(mode);
-		//}
+		configurator = Configurator.loadConfig();
 
 		int WIDTH  = Gdx.graphics.getWidth();
 		int HEIGHT = Gdx.graphics.getHeight();
@@ -116,6 +109,7 @@ public class StarCorpGame extends ApplicationAdapter {
 		super.resize(width, height);
 		viewport.update(width, height);
 		gui.getViewport().update(width, height);
+		gui.resize();
 	}
 
 	public void openInventory(Entity entity) {
@@ -136,5 +130,10 @@ public class StarCorpGame extends ApplicationAdapter {
 		a = MathUtils.clamp(a, minZoom, maxZoom);
 
 		camera.zoom = a;
+	}
+
+
+	public GUI getGui() {
+		return gui;
 	}
 }

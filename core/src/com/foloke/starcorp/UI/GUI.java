@@ -1,6 +1,7 @@
 package com.foloke.starcorp.UI;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
@@ -79,5 +80,26 @@ public class GUI extends Stage {
 
     public void focused(VisWindow window) {
         focusedWindow = window;
+    }
+
+    SettingsWindow settingsWindow;
+    public void openSettings() {
+        if(settingsWindow == null) {
+            settingsWindow = new SettingsWindow(this);
+            addActor(settingsWindow);
+        } else {
+            settingsWindow.close();
+            closeSettings();
+        }
+    }
+
+    public void closeSettings() {
+        settingsWindow = null;
+    }
+
+    public void resize() {
+        if(settingsWindow != null) {
+            settingsWindow.resize();
+        }
     }
 }
