@@ -35,7 +35,12 @@ public class StarCorpGame extends ApplicationAdapter {
 	@Override
 	public void create () {
 
+		//RESEARCH STATED THAT BOX2D WORKS FINE ONLY WITH LOCKED STEPS, SO either we change static steps from
+		//options (up to 240fps), which leads to computing costs, or live with 60fps locked to physics
+		Gdx.graphics.setForegroundFPS(60);
+
 		configurator = Configurator.loadConfig();
+		configurator.apply();
 
 		int WIDTH  = Gdx.graphics.getWidth();
 		int HEIGHT = Gdx.graphics.getHeight();

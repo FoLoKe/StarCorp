@@ -1,5 +1,6 @@
 package com.foloke.starcorp;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -46,10 +47,10 @@ public class WorldController {
         for (PlayerController controller : controllerList) {
             controller.act(delta);
 
-            if(controller.isNeedsTransfer()) {
+            if (controller.isNeedsTransfer()) {
                 Sector.iVector2 newCoordinates = Sector.getSector(controller.getPlayer());
 
-                if(controller.getCurrentSector() == null) {
+                if (controller.getCurrentSector() == null) {
                     controller.transfer(sectors.getSector(newCoordinates.x, newCoordinates.y));
                 }
 
@@ -68,8 +69,7 @@ public class WorldController {
                 controller.transfer(sectors.getSector(newCoordinates.x, newCoordinates.y));
             }
         }
-
-        world.step(1f/45f, 4, 4);
+        world.step(1/60f, 16, 16);
     }
 
     public void debug(ShapeRenderer debugRenderer) {

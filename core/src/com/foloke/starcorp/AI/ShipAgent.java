@@ -12,7 +12,7 @@ public class ShipAgent implements Steerable<Vector2> {
 
     Ship ship;
 
-    float linearSpeedThreshold = 0.00001f;
+    float linearSpeedThreshold = 0.005f;
     float boundingRadius = 1f;
     boolean tagged = false;
 
@@ -21,10 +21,10 @@ public class ShipAgent implements Steerable<Vector2> {
     float maxLinearAcceleration = 1f;
     float maxAngularAcceleration = 1f;
 
-    public float forwardForce = 10f;
-    public float breakingForce = 5f;
-    float rotationImpulse = 0.01f;
-    float sidewaysForce = 5f;
+    public float forwardForce = 600f;
+    public float breakingForce = 300f;
+    float rotationImpulse = 0.6f;
+    float sidewaysForce = 300f;
     boolean dampingEnabled = true;
 
     SteeringBehavior<Vector2> steeringBehavior;
@@ -44,9 +44,9 @@ public class ShipAgent implements Steerable<Vector2> {
             }
             steeringOutput.linear.x *= sidewaysForce;
 
-            steeringOutput.linear.rotateRad(getOrientation()).scl(delta * 60);
+            steeringOutput.linear.rotateRad(getOrientation()).scl(delta);
 
-            steeringOutput.angular *= rotationImpulse * delta * 60;
+            steeringOutput.angular *= rotationImpulse * delta;
 
             apply(steeringOutput, delta);
         }
@@ -62,18 +62,16 @@ public class ShipAgent implements Steerable<Vector2> {
                 ship.applyForce(steeringAcceleration.linear);
             } else {
                 if (dampingEnabled) {
-                    Vector2 vector2 = ship.getVelocityVec().cpy().rotateRad(-ship.getRotationRad() + 180 * MathUtils.degreesToRadians);
-
                     if (ship.getVelocity() > linearSpeedThreshold) {
-                        Vector2 dampingForce = new Vector2();
+                        Vector2 vector2 = ship.getVelocityVec().cpy().rotateRad(-ship.getRotationRad() + 180 * MathUtils.degreesToRadians).nor();
+                        if (vector2.y > 0) {
+                            vector2.y *= forwardForce;
+                        } else {
+                            vector2.y *= breakingForce;
+                        }
+                        vector2.x *= sidewaysForce;
 
-                        float dampingX = MathUtils.clamp(vector2.x, -sidewaysForce, sidewaysForce);
-                        float dampingY = MathUtils.clamp(vector2.y, -breakingForce, forwardForce);
-
-                        dampingForce.x = dampingX;
-                        dampingForce.y = dampingY;
-
-                        ship.applyForce(dampingForce.rotateRad(ship.getRotationRad()).scl(60 * delta));
+                        ship.applyForce(vector2.rotateRad(ship.getRotationRad()).scl(delta));
                     } else {
                         ship.forceStop();
                     }

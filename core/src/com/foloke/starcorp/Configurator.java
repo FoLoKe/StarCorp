@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Configurator {
     private static final String fileName = "config.json";
-    public boolean vSync;
+    public boolean vSync = false;
     public boolean fullscreen = false;
     public int monitorIndex = 0;
     public int displayModeIndex = -1;
@@ -35,7 +35,7 @@ public class Configurator {
                 ObjectMapper objectMapper = new ObjectMapper();
                 configurator = objectMapper.readValue(file.reader(), Configurator.class);
             } catch (Exception e) {
-                System.out.println(e);
+                e.printStackTrace();
                 configurator = new Configurator();
             }
         } else {
@@ -56,6 +56,7 @@ public class Configurator {
 
     public void apply() {
         //VSYNC
+
         Gdx.graphics.setVSync(vSync);
 
         //DISPLAY
@@ -84,7 +85,19 @@ public class Configurator {
         try {
             objectMapper.writeValue(file.writer(false), this);
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
+    }
+
+    public Configurator cpy() {
+        Configurator newConfig = new Configurator();
+        newConfig.fullscreen = fullscreen;
+        newConfig.displayModeIndex = displayModeIndex;
+        newConfig.monitorIndex = monitorIndex;
+        newConfig.vSync = vSync;
+        newConfig.windowedHeight = windowedHeight;
+        newConfig.windowedWidth = windowedWidth;
+
+        return newConfig;
     }
 }
