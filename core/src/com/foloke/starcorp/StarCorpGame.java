@@ -37,6 +37,7 @@ public class StarCorpGame extends ApplicationAdapter {
 
 		//RESEARCH STATED THAT BOX2D WORKS FINE ONLY WITH LOCKED STEPS, SO either we change static steps from
 		//options (up to 240fps), which leads to computing costs, or live with 60fps locked to physics
+		//LOCK 60 for now
 		Gdx.graphics.setForegroundFPS(60);
 
 		configurator = Configurator.loadConfig();
@@ -97,8 +98,6 @@ public class StarCorpGame extends ApplicationAdapter {
 
 		dDebugRenderer.render(worldController.getWorld(), camera.combined);
 		gui.render();
-
-
 	}
 	
 	@Override
@@ -141,4 +140,18 @@ public class StarCorpGame extends ApplicationAdapter {
 	public GUI getGui() {
 		return gui;
 	}
+
+	@Override
+	public void resume() {
+		System.out.println("resume");
+		super.resume();
+	}
+
+	@Override
+	public void pause() {
+		System.out.println("pause");
+		super.pause();
+	}
+
+
 }

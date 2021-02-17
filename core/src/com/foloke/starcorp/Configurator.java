@@ -17,14 +17,6 @@ public class Configurator {
 
     public Configurator() {
 
-        Graphics.Monitor[] monitors = Gdx.graphics.getMonitors();
-        for (Graphics.Monitor monitor : monitors) {
-            Graphics.DisplayMode[] modes = Gdx.graphics.getDisplayModes(monitor);
-            for (Graphics.DisplayMode mode : modes) {
-                System.out.println(mode);
-            }
-        }
-
     }
 
     public static Configurator loadConfig() {
@@ -49,16 +41,11 @@ public class Configurator {
         Configurator configurator = new Configurator();
         configurator.vSync = true;
 
-
         configurator.save();
         return new Configurator();
     }
 
     public void apply() {
-        //VSYNC
-
-        Gdx.graphics.setVSync(vSync);
-
         //DISPLAY
         Graphics.Monitor[] monitors = Gdx.graphics.getMonitors();
         if(fullscreen) {
@@ -77,6 +64,9 @@ public class Configurator {
         } else {
             Gdx.graphics.setWindowedMode(windowedWidth, windowedHeight);
         }
+
+        //VSYNC
+        Gdx.graphics.setVSync(vSync);
     }
 
     public void save() {

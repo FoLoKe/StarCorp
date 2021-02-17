@@ -3,14 +3,11 @@ package com.foloke.starcorp.UI;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
 import com.foloke.starcorp.Configurator;
 import com.foloke.starcorp.StarCorpGame;
 import com.kotcrab.vis.ui.util.IntDigitsOnlyFilter;
@@ -22,7 +19,7 @@ public class SettingsWindow extends VisWindow {
 
     //Settings row
     VisCheckBox fullscreenModeBox;
-    VisSelectBox<SMonitor> monitorSelection;
+    VisSelectBox<SM> monitorSelection;
     VisSelectBox<Graphics.DisplayMode> displayModeSelection;
     VisTextField screenWidthField;
     VisTextField screenHeightField;
@@ -63,7 +60,7 @@ public class SettingsWindow extends VisWindow {
         resize();
     }
 
-    public void populate() {
+    private void populate() {
         TableUtils.setSpacingDefaults(this);
         columnDefaults(0).left();
 
@@ -107,7 +104,7 @@ public class SettingsWindow extends VisWindow {
         align(Align.top);
     }
 
-    public void addOptionsListeners() {
+    private void addOptionsListeners() {
         fullscreenModeBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -120,6 +117,7 @@ public class SettingsWindow extends VisWindow {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 localConfig.monitorIndex = monitorSelection.getSelectedIndex();
+                updateDisplayModes(monitorSelection.getSelected(), 0);
             }
         });
 
@@ -174,7 +172,7 @@ public class SettingsWindow extends VisWindow {
         });
     }
 
-    public void addButtonsListeners() {
+    private void addButtonsListeners() {
         cancelButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -213,20 +211,23 @@ public class SettingsWindow extends VisWindow {
         });
     }
 
-    public void setDefaults() {
+    private void setDefaults() {
         fullscreenModeBox.setChecked(localConfig.fullscreen);
 
-        Array<SMonitor> monitors = SMonitor.getSMonitors(Gdx.graphics.getMonitors());
-        SMonitor currentMonitor = new SMonitor(0, Gdx.graphics.getMonitor());
+        SM[] monitors = SM.convert(Gdx.graphics.getMonitors());
+        if(monitors.length > 0) {
+            SM currentMonitor;
+            if (monitors.length > localConfig.monitorIndex) {
+                currentMonitor = monitors[localConfig.monitorIndex];
+            } else {
+                currentMonitor = monitors[0];
+            }
 
-        Graphics.DisplayMode[] displayModes = Gdx.graphics.getDisplayModes(currentMonitor.monitor);
-        Graphics.DisplayMode currentDisplayMode = Gdx.graphics.getDisplayMode();
+            monitorSelection.setItems(monitors);
+            monitorSelection.setSelected(currentMonitor);
 
-        monitorSelection.setItems(monitors);
-        displayModeSelection.setItems(displayModes);
-
-        monitorSelection.setSelected(currentMonitor);
-        displayModeSelection.setSelected(currentDisplayMode);
+            updateDisplayModes(currentMonitor, localConfig.displayModeIndex);
+        }
 
         screenWidthField.setTextFieldFilter(new IntDigitsOnlyFilter(false));
         screenWidthField.setText(localConfig.windowedWidth + "");
@@ -244,6 +245,22 @@ public class SettingsWindow extends VisWindow {
         screenHeightField.setDisabled(localConfig.fullscreen);
     }
 
+    private void updateDisplayModes(SM sMonitor, int selectionIndex) {
+        Graphics.DisplayMode[] displayModes = Gdx.graphics.getDisplayModes(sMonitor.monitor);
+
+        if(displayModes.length > 0) {
+            Graphics.DisplayMode currentDisplayMode;
+            if(displayModes.length > selectionIndex) {
+                currentDisplayMode = displayModes[selectionIndex];
+            } else {
+                currentDisplayMode = displayModes[0];
+            }
+
+            displayModeSelection.setItems(displayModes);
+            displayModeSelection.setSelected(currentDisplayMode);
+        }
+    }
+
     public void resize() {
         setSize(Gdx.graphics.getWidth() * 0.8f, Gdx.graphics.getHeight() * 0.8f);
         setPosition(Gdx.graphics.getWidth() * 0.1f, Gdx.graphics.getHeight() * 0.1f);
@@ -255,13 +272,13 @@ public class SettingsWindow extends VisWindow {
         gui.closeSettings();
     }
 
-    private static class SMonitor {
+    static class SM {
         int index;
         Graphics.Monitor monitor;
 
-        public SMonitor(int index,  Graphics.Monitor monitor) {
-            this.index = index;
+        public SM(Graphics.Monitor monitor, int index) {
             this.monitor = monitor;
+            this.index = index;
         }
 
         @Override
@@ -269,12 +286,11 @@ public class SettingsWindow extends VisWindow {
             return index + ": " + monitor.name;
         }
 
-        public static Array<SMonitor> getSMonitors(Graphics.Monitor[] monitors) {
-            Array<SMonitor> sMonitors = new Array<>();
+        static SM[] convert(Graphics.Monitor[] monitors) {
+            SM[] sMonitors = new SM[monitors.length];
             for (int i = 0; i < monitors.length; i++) {
-                sMonitors.add(new SMonitor(i, monitors[i]));
+                sMonitors[i] = new SM(monitors[i], i);
             }
-
             return sMonitors;
         }
     }

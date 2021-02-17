@@ -86,10 +86,6 @@ public class PlayerController {
                 manualSteering.strafeRight();
             }
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.V)) {
-                Gdx.graphics.setVSync(StarCorpGame.configurator.vSync);
-                StarCorpGame.configurator.vSync = !StarCorpGame.configurator.vSync;
-            }
             if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
                 player.setPosition(0, 0);
                 player.setRotationDeg(0);
