@@ -1,4 +1,4 @@
-package com.foloke.starcorp.Inventory;
+package com.foloke.starcorp.packer;
 
 public enum ContainerType {
     SOLID, GAS, LIQUID

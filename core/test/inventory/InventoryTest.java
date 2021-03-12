@@ -1,9 +1,10 @@
 package inventory;
 
 import com.badlogic.gdx.utils.Array;
-import com.foloke.starcorp.Inventory.ContainerType;
+import com.foloke.starcorp.packer.ContainerType;
 import com.foloke.starcorp.Inventory.Inventory;
 import com.foloke.starcorp.Inventory.Item;
+import com.foloke.starcorp.packer.PItem;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,19 +38,25 @@ public class InventoryTest {
         float item1Volume = 5;
         float item2Volume = 4;
 
-        assertFalse(inventory.couldTake(new Item(1, 100, 3, ContainerType.SOLID)));
-        assertTrue(inventory.couldTake(new Item(1, 100, 3, ContainerType.SOLID), 1));
+        PItem testItemData = new PItem(1, 100, ContainerType.SOLID);
+
+        assertFalse(inventory.couldTake(new Item(testItemData, 3)));
+        assertTrue(inventory.couldTake(new Item(testItemData, 3), 1));
 
         Array<Item> items = new Array<>();
+        PItem testItemData1 = new PItem(2, item1Volume, ContainerType.SOLID);
+        PItem testItemData2 = new PItem(3, item2Volume, ContainerType.SOLID);
+
         for(int i = 0; i < itemsCount; i++) {
-            items.add(new Item(2, item1Volume, 1, ContainerType.SOLID));
-            items.add(new Item(3, item2Volume, 1, ContainerType.SOLID));
+            items.add(new Item(testItemData1, 1));
+            items.add(new Item(testItemData2, 1));
         }
 
         assertTrue(inventory.couldTake(items));
 
+        PItem testItemData3 = new PItem(4, 10, ContainerType.SOLID);
         for(int i = 0; i < itemsCount; i++) {
-            items.add(new Item(4, 10, 1, ContainerType.SOLID));
+            items.add(new Item(testItemData3, 1));
         }
 
         assertFalse(inventory.couldTake(items));
@@ -63,15 +70,18 @@ public class InventoryTest {
         float item2Volume = 21;
         float targetVolume = items1Count * item1Volume + items2Count * item2Volume;
 
+        PItem testItemData1 = new PItem(1, item1Volume, ContainerType.SOLID);
+        PItem testItemData2 = new PItem(2, item2Volume, ContainerType.SOLID);
+
         for(int i = 0; i < items1Count; i++) {
-            assertTrue(inventory.addItem(new Item(1, item1Volume, 1, ContainerType.SOLID)));
+            assertTrue(inventory.addItem(new Item(testItemData1, 1)));
         }
 
         assertEquals(item1Volume * items1Count, inventory.getVolume());
 
         Array<Item> items = new Array<>();
         for(int i = 0; i < items2Count; i++) {
-            items.add(new Item(2, item2Volume, 1, ContainerType.SOLID));
+            items.add(new Item(testItemData2, 1));
         }
 
         assertFalse(inventory.addItems(items));
@@ -92,7 +102,8 @@ public class InventoryTest {
         assertTrue(inventory.setMaxCapacity(120));
         assertFalse(inventory.setMaxCapacity(actualVolume - 1));
 
-        assertFalse(inventory.couldTake(new Item(5, 0, 1, ContainerType.GAS)));
+        PItem testItemData3 = new PItem(5, 0, ContainerType.GAS);
+        assertFalse(inventory.couldTake(new Item(testItemData3, 1)));
     }
 
     @Test
@@ -104,13 +115,16 @@ public class InventoryTest {
         float item1Volume = 15;
         float item2Volume = 21;
 
+        PItem testItemData1 = new PItem(1, item1Volume, ContainerType.SOLID);
+        PItem testItemData2 = new PItem(2, item2Volume, ContainerType.SOLID);
+
         for(int i = 0; i < items1Count; i++) {
-            inventory.addItem(new Item(1, item1Volume, 1, ContainerType.SOLID));
+            inventory.addItem(new Item(testItemData1, 1));
         }
 
         Array<Item> items = new Array<>();
         for(int i = 0; i < items2Count; i++) {
-            items.add(new Item(2, item2Volume, 1, ContainerType.SOLID));
+            items.add(new Item(testItemData2, 1));
         }
     }
 }

@@ -1,6 +1,11 @@
 package com.foloke.starcorp.Inventory;
 
 import com.badlogic.gdx.utils.Array;
+import com.foloke.starcorp.packer.ContainerType;
+import com.foloke.starcorp.packer.PItem;
+
+import java.util.Iterator;
+import java.util.Map;
 
 public class Inventory {
     private final Array<Item> items;
@@ -20,7 +25,8 @@ public class Inventory {
     }
 
     public boolean couldTake(Item item, int count) {
-        return volume + item.getVolume(count) <= maxVolume && containerType == item.type;
+        return couldTake(item.getData(), count);
+
     }
 
     public boolean couldTake(Array<Item> items) {
@@ -28,6 +34,22 @@ public class Inventory {
         for (Item item: items.iterator()) {
             targetVolume += item.getVolume();
             if(volume + targetVolume > maxVolume || !couldTake(item)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean couldTake(PItem itemData, int count) {
+        return volume + itemData.volume * count <= maxVolume && containerType == itemData.type;
+    }
+
+    public boolean couldTake(Map<Integer, Integer> itemsMap) {
+        int targetVolume = 0;
+        for (Map.Entry<Integer, Integer> entry: itemsMap.entrySet()) {
+            PItem itemData =  ItemsSheet.getItemData(entry.getKey());
+            targetVolume += itemData.volume;
+            if(volume + targetVolume > maxVolume || !couldTake(itemData, entry.getValue())) {
                 return false;
             }
         }
@@ -51,7 +73,7 @@ public class Inventory {
     private void addSorted(Item item) {
         volume += item.getVolume();
         for (Item inventoryItem : items.iterator()) {
-            if(inventoryItem.id == item.id) {
+            if(inventoryItem.getId() == item.getId()) {
                 inventoryItem.add(item.getCount());
                 return;
             }
@@ -72,27 +94,38 @@ public class Inventory {
         return true;
     }
 
-    public boolean removeItem(Item item) {
+    public int removeItem(Item item) {
         return removeItem(item, item.getCount());
     }
 
-    public boolean removeItem(Item item, int count) {
-        if(items.contains(item, false)) {
-            if(item.getCount() > count) {
-                return false;
-            } else if (item.getCount() == count) {
-                items.removeValue(item, false);
-                volume -= item.getVolume();
-                return true;
-            } else {
-                item.remove(count);
-                volume -= item.getVolume(count);
-                return true;
+    public int removeItem(Item item, int count) {
+        return removeItem(item.getData(), count);
+    }
+
+    public int removeItem(PItem itemData, int count) {
+        return removeItem(itemData.id, count);
+    }
+
+    public int removeItem(int id, int count) {
+        for (Iterator<Item> it = items.iterator(); it.hasNext(); ) {
+            Item item = it.next();
+            if(item.getId() == id) {
+                int result = count - item.getCount();
+                if(result < 0) {
+                    item.remove(count);
+                    return 0;
+                } else {
+                    it.remove();
+                }
+
+                return result;
             }
         }
 
-        return false;
+        return count;
     }
+
+
 
     public boolean transfer(Item item, int count, Inventory inventory) {
         if(items.contains(item, false) && inventory.couldTake(item, count)) {
@@ -124,15 +157,27 @@ public class Inventory {
         return items;
     }
 
-    public boolean removeItems(Array<Item> items) {
-        for (Item item : items.iterator()) {
-            if(!removeItem(item)) {
-                return false;
-            } else {
-                items.removeValue(item, false);
+    public void removeItems(Array<Item> items) {
+        for (Iterator<Item> it = items.iterator(); it.hasNext(); ) {
+            Item item = it.next();
+            if(removeItem(item) == 0) {
+                it.remove();
             }
         }
-        return true;
+    }
+
+    public void removeItems(Map<Integer, Integer> items) {
+        for (Iterator<Map.Entry<Integer, Integer>> it = items.entrySet().iterator();
+             it.hasNext(); ) {
+
+            Map.Entry<Integer, Integer> entry = it.next();
+            int result = removeItem(entry.getKey(), entry.getValue());
+            if(result > 0) {
+                entry.setValue(result);
+            } else {
+                it.remove();
+            }
+        }
     }
 
     public float getMaxVolume() {

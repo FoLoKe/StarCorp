@@ -2,16 +2,22 @@ package com.foloke.starcorp.Inventory;
 
 import com.badlogic.gdx.utils.Array;
 
-public class Factory implements Processor<Recipe>{
+import java.util.HashMap;
+import java.util.Map;
+
+public class Factory implements Processor<Recipe> {
 
     private final Array<Recipe> queue;
     private Recipe currentRecipe;
     private float timeSpent;
-    private boolean readyToProduce;
     private Inventory source;
+
+    private Array<Item> output;
+    private final Map<Integer, Integer> needToAcquire;
 
     public Factory() {
         queue = new Array<>();
+        needToAcquire = new HashMap<>();
     }
 
     @Override
@@ -29,37 +35,64 @@ public class Factory implements Processor<Recipe>{
         queue.removeIndex(index);
     }
 
+    enum ProductionState {
+        WAITING, ACQUIRING, PRODUCING, OUTPUTTING
+    }
+
+    ProductionState state = ProductionState.WAITING;
+
     @Override
     public void proceed(float delta) {
-        if(readyToProduce) {
-            if(timeSpent >= currentRecipe.productionTime && source.couldTake(currentRecipe.output)) {
-                source.addItems(currentRecipe.output);
-                readyToProduce = false;
-            } else {
-                timeSpent += delta;
-            }
-        } else if (queue.size > 0) {
-            setRecipe(queue.first());
+        switch (state) {
+            case WAITING:
+                if (queue.size > 0) {
+                    state = ProductionState.ACQUIRING;
+                }
+                break;
+
+            case ACQUIRING:
+                setRecipe(queue.first());
+                break;
+
+            case PRODUCING:
+                if (timeSpent >= currentRecipe.productionTime) {
+                    state = ProductionState.OUTPUTTING;
+                } else {
+                    timeSpent += delta;
+                }
+                break;
+
+            case OUTPUTTING:
+                if (output == null) {
+                    ItemsSheet.create(currentRecipe.output);
+                }
+
+                if (output.size > 0) {
+                    if (source.addItems(output)) {
+                        output = null;
+                    }
+                } else {
+                    state = ProductionState.WAITING;
+                }
+                break;
         }
     }
+
 
     private void setRecipe(Recipe newRecipe) {
-        this.timeSpent = 0;
-
         if(currentRecipe == null) {
-            this.currentRecipe = newRecipe.cpy();
+            this.timeSpent = 0;
+            this.currentRecipe = newRecipe;
+            for (Map.Entry<Integer, Integer> entry : currentRecipe.input.entrySet()) {
+                needToAcquire.put(entry.getKey(), entry.getKey());
+            }
         }
 
-        acquireItems();
+        source.removeItems(needToAcquire);
 
-        if(readyToProduce) {
+        if(needToAcquire.size() == 0) {
             queue.peek();
+            state = ProductionState.PRODUCING;
         }
     }
-
-    private void acquireItems() {
-        readyToProduce = source.removeItems(currentRecipe.input);
-    }
-
-
 }

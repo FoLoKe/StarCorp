@@ -5,9 +5,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.foloke.starcorp.Inventory.ContainerType;
+import com.foloke.starcorp.packer.ContainerType;
 import com.foloke.starcorp.Inventory.Inventory;
-import com.foloke.starcorp.Inventory.Item;
+import com.foloke.starcorp.Inventory.ItemsSheet;
 import com.foloke.starcorp.packer.PEntity;
 
 public class Entity {
@@ -37,7 +37,7 @@ public class Entity {
         //DEBUG:
         inventory = new Inventory(3, ContainerType.SOLID);
         for(int i = 0; i < 20; i++) {
-            inventory.addItem(new Item(i, 15, 10, ContainerType.SOLID));
+            inventory.addItem(ItemsSheet.create(2, 15));
         }
     }
 

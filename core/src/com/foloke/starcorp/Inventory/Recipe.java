@@ -2,34 +2,25 @@ package com.foloke.starcorp.Inventory;
 
 import com.badlogic.gdx.utils.Array;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Recipe {
-    public Array<Item> input;
-    public Array<Item> output;
+    public final Map<Integer, Integer> input;
+    public final Map<Integer, Integer> output;
     public FactoryType factoryType;
     public float productionTime;
 
     public Recipe() {
-        input = new Array<>();
-        output = new Array<>();
+        input = new HashMap<>();
+        output = new HashMap<>();
     }
 
-    private Recipe(Array<Item> input, Array<Item> output, FactoryType factoryType, float productionTime) {
-        this();
-        for (Item item : input.iterator()) {
-            this.input.add(item.cpy());
-        }
-
-        for(Item item : output.iterator()) {
-            this.output.add(item.cpy());
-        }
+    private Recipe(Map<Integer, Integer> input, Map<Integer, Integer> output, FactoryType factoryType, float productionTime) {
+        this.input = input;
+        this.output = output;
 
         this.factoryType = factoryType;
         this.productionTime = productionTime;
-    }
-
-    public Recipe cpy() {
-        return new Recipe(input, output, factoryType, productionTime);
     }
 }

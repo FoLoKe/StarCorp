@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.viewport.*;
 import com.foloke.starcorp.Entities.Entity;
 import com.foloke.starcorp.Entities.PlayerController;
+import com.foloke.starcorp.Inventory.ItemsSheet;
 import com.foloke.starcorp.UI.GUI;
 
 public class StarCorpGame extends ApplicationAdapter {
@@ -34,6 +35,9 @@ public class StarCorpGame extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+
+		//RES
+		ItemsSheet.init();
 
 		//RESEARCH STATED THAT BOX2D WORKS FINE ONLY WITH LOCKED STEPS, SO either we change static steps from
 		//options (up to 240fps), which leads to computing costs, or live with 60fps locked to physics

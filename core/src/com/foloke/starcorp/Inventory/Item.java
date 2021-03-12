@@ -1,16 +1,19 @@
 package com.foloke.starcorp.Inventory;
 
+import com.foloke.starcorp.packer.ContainerType;
+import com.foloke.starcorp.packer.PItem;
+
 public class Item {
-    final int id;
-    final private float volume;
-    public ContainerType type;
+    private final PItem itemData;
     private int count;
 
-    public Item(int id, float volume, int count, ContainerType type) {
-        this.id = id;
-        this.volume = volume;
+    public Item(int id, int count) {
+        this(ItemsSheet.getItemData(id), count);
+    }
+
+    public Item(PItem itemData, int count) {
+        this.itemData = itemData;
         this.count = count;
-        this.type = type;
     }
 
     public int getCount() {
@@ -27,7 +30,7 @@ public class Item {
 
     public Item separate(int count) {
         if(count > 0) {
-            Item separated = new Item(id, volume, count, type);
+            Item separated = ItemsSheet.create(itemData, count);
             this.count -= count;
             return separated;
         }
@@ -36,8 +39,8 @@ public class Item {
     }
 
     public Item separateVolume(float volumeToSeparate) {
-        if(volumeToSeparate < volume) {
-            int count = (int) Math.floor(volumeToSeparate / volume);
+        if(volumeToSeparate < itemData.volume) {
+            int count = (int) Math.floor(volumeToSeparate / itemData.volume);
             return separate(count);
         }
 
@@ -45,18 +48,22 @@ public class Item {
     }
 
     public int getId() {
-        return id;
+        return itemData.id;
     }
 
     public Item cpy() {
-        return new Item(id, volume, count, type);
+        return new Item(itemData, count);
     }
 
     public float getVolume() {
-        return volume * count;
+        return itemData.volume * this.count;
     }
 
     public float getVolume(int count) {
-        return volume * count;
+        return itemData.volume * count;
+    }
+
+    public PItem getData() {
+        return itemData;
     }
 }
